@@ -17,4 +17,5 @@ public class UserController {
     public void create(@RequestBody UserModel userModel) {
         System.out.println(userModel.getUsername());
     }
+
 }
