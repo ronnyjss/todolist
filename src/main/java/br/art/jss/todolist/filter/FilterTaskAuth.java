@@ -28,37 +28,45 @@ public class FilterTaskAuth extends OncePerRequestFilter {
         HttpServletResponse response,
         FilterChain chain
     ) throws IOException, ServletException {
-        var authorization = request.getHeader("Authorization");
 
-        authorization = authorization.substring("Basic".length()).trim();
+        var servletPath = request.getServletPath();
 
-        byte[] authDecode = Base64.getDecoder().decode(authorization);
+        if (servletPath.equals("/tasks/")) {
+            var authorization = request.getHeader("Authorization");
 
-        var authString = new String(authDecode);
+            authorization = authorization.substring("Basic".length()).trim();
 
-        String[] credentials = authString.split(":");
-        String username = credentials[0];
-        String password = credentials[1];
+            byte[] authDecode = Base64.getDecoder().decode(authorization);
 
-        // Validar usuario
-        var user = this.userRepository.findByUsername(username);
-        if (user == null) {
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
-        } else {
-            // Validar senha
-            var passwordVerify = BCrypt
-                .verifyer()
-                .verify(password.toCharArray(), user.getPassword())
-                .verified;
+            var authString = new String(authDecode);
 
-            if (!passwordVerify) {
-                response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+            String[] credentials = authString.split(":");
+            String username = credentials[0];
+            String password = credentials[1];
+
+            // Validar usuario
+            var user = this.userRepository.findByUsername(username);
+
+            boolean authorized = false;
+
+            if (user != null) {
+                // Validar senha
+                authorized = BCrypt
+                    .verifyer()
+                    .verify(password.toCharArray(), user.getPassword())
+                    .verified;
             }
-        }
 
-        System.out.println(username);
-        System.out.println(password);
+            if (!authorized) {
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+                return;
+            }
+
+            System.out.println(username);
+            System.out.println(password);
+        }
 
         chain.doFilter(request, response);
     }
+
 }
