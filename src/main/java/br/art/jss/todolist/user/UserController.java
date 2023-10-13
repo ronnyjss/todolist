@@ -1,6 +1,5 @@
 package br.art.jss.todolist.user;
 
-import org.aspectj.weaver.bcel.BcelAccessForInlineMunger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
