@@ -55,6 +55,8 @@ public class FilterTaskAuth extends OncePerRequestFilter {
                     .verifyer()
                     .verify(password.toCharArray(), user.getPassword())
                     .verified;
+
+                request.setAttribute("idUser", user.getId());
             }
 
             if (!authorized) {
